@@ -13,73 +13,136 @@ const login = (req, res) => {
   const password = req.body.data.password
   //checking if a user exist
   authentication.findOne({ username: username }, async (error, result) => {
-    if (error) return res.sendStatus(401)
-    const isMatch = await bycrypt.compare(password, result.password)
-    if (!isMatch) return res.sendStatus(403)
-    const payload = {
-      username: username,
-      password: result.password,
+    if (!result)
+      return res.json({
+        status: 401,
+        message: 'Invalid username or password ' + error,
+      })
+    console.log(result)
+    const result_password = result.password
+    const isMatch = await bycrypt.compare(password, result_password)
+    if (!isMatch)
+      return res.json({
+        status: 403,
+        message: 'Invalid username or password',
+      })
+    const payloadToRefresh = {
+      username: result.username,
       email: result.email,
+      password: result_password,
     }
-    const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET_KEY, {
-      expiresIn: '30s',
-    })
-    const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET_KEY)
-    res.json({
-      status: 'success',
-      accessToken: accessToken,
+    const refreshToken = jwt.sign(payloadToRefresh, REFRESH_TOKEN_SECRET_KEY)
+    const payloadToAccessToken = {
+      username: payloadToRefresh.username,
+      email: payloadToRefresh.email,
+      password: payloadToRefresh.password,
       refreshToken: refreshToken,
-    })
-  })
-}
-
-const signup = (req, res) => {
-  const username = req.body.data.username
-  const email = req.body.email
-  const password = req.body.data.password
-  authentication.exists({ email: email }, (error, result) => {
-    if (result) return res.sendStatus(403)
-
-    if (
-      !validator.isLength(username, { min: 3, max: 50 }) &&
-      !validator.isEmail(email) &&
-      !validator.isLength(password, { min: 8, max: 50 })
-    ) {
-      return res.sendStatus(401)
     }
-    const payload = {
-      username: username,
-      email: email,
-      password: password,
-    }
-    const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET_KEY, {
-      expiresIn: '30s',
-    })
-    const refreshToken = jwt.sign(payload, REFRESH_TOKEN_SECRET_KEY)
-
-    const saveAuthentication = new authentication({
-      username: payload.username,
-      email: payload.email,
-      password: payload.password,
-      rerefreshToken: refreshToken,
-    })
-
-    saveAuthentication
-      .save()
-      .then((result) => {
-        return res.json({
-          status: '200',
-          data: result,
+    const accessToken = jwt.sign(
+      payloadToAccessToken,
+      ACCESS_TOKEN_SECRET_KEY,
+      {
+        expiresIn: '1d',
+      },
+    )
+    authentication.updateOne(
+      { email: payloadToRefresh.email },
+      { $set: { refreshToken: refreshToken } },
+      (errorRefreshing, resultRefreshing) => {
+        if (!resultRefreshing) return res.sendStatus(403)
+        res.json({
+          status: 'success',
+          message: 'loggedIn',
           accessToken: accessToken,
           refreshToken: refreshToken,
         })
+      },
+    )
+  })
+}
+
+//Sign up controller
+
+const signup = (req, res) => {
+  console.log(req.body)
+  const saltRounds = 10
+  const username = req.body.data.username
+  const email = req.body.data.email
+  const password = req.body.data.password
+  authentication.exists({ email: email }, (error, result) => {
+    if (result)
+      return res.json({
+        status: 403,
+        message: 'User already exist',
       })
-      .catch((error) => {
-        return res.json({
-          status: '500',
-          error: error,
+
+    if (
+      validator.isLength(username, { min: 3, max: 50 }) &&
+      validator.isEmail(email) &&
+      validator.isLength(password, { min: 8, max: 50 })
+    ) {
+      bycrypt.hash(password, saltRounds, (err, hash) => {
+        // Store hash in your password DB.
+        if (err)
+          return res.json({
+            status: 403,
+            message: 'Unable to hash password',
+          })
+        console.log('Password is :' + hash)
+
+        const payloadToRefresh = {
+          username: username,
+          email: email,
+          password: hash,
+        }
+        const refreshToken = jwt.sign(
+          payloadToRefresh,
+          REFRESH_TOKEN_SECRET_KEY,
+        )
+        const payloadToAccessToken = {
+          username: username,
+          email: email,
+          password: hash,
+          rerefreshToken: refreshToken,
+        }
+        const accessToken = jwt.sign(
+          payloadToAccessToken,
+          ACCESS_TOKEN_SECRET_KEY,
+          {
+            expiresIn: '1d',
+          },
+        )
+
+        const saveAuthentication = new authentication({
+          username: payloadToAccessToken.username,
+          email: payloadToAccessToken.email,
+          password: payloadToAccessToken.password,
+          rerefreshToken: refreshToken,
         })
+
+        saveAuthentication
+          .save()
+          .then((result) => {
+            return res.json({
+              status: '200',
+              data: result,
+              accessToken: accessToken,
+              refreshToken: refreshToken,
+            })
+          })
+          .catch((error) => {
+            return res.json({
+              status: '403',
+              error: 'An error  has occured ' + error,
+            })
+          })
       })
+    } else {
+      return res.json({
+        status: 403,
+        message: 'Invalid details',
+      })
+    }
   })
 }
 

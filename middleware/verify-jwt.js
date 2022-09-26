@@ -5,10 +5,24 @@ const jwt = require('jsonwebtoken')
 
 const verifyJwt = async (req, res, next) => {
   const authorizationHeader = req.headers['authorization']
+  if (!authorizationHeader)
+    return res.json({
+      status: 401,
+      message: 'empty token',
+    })
   const accessToken = authorizationHeader.split(' ')[1]
-  if (!accessToken) return res.sendStatus(401)
+  if (!accessToken)
+    return res.json({
+      status: 401,
+      message: 'Unauthorized or empty token token',
+    })
   jwt.verify(accessToken, ACCESS_TOKEN_SECRET_KEY, (err, result) => {
-    if (err) return res.sendStatus(403)
+    if (!result)
+      return res.json({
+        status: 403,
+        message: 'Unable to locate token details',
+      })
+    //console.log(result)
     req.user = result
     next()
   })

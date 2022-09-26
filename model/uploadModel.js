@@ -10,8 +10,9 @@ const uploads = new mongoose.Schema({
     data: Buffer,
     contentType: String,
   },
+  email: String,
 })
 
 //Image is a model which has a schema imageSchema
 
-module.exports = uploadDetails = mongoose.model('hostelPosts', uploads)
+module.exports = uploadDetails = mongoose.model('uploads', uploads)
