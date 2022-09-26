@@ -51,8 +51,8 @@ const login = (req, res) => {
       (errorRefreshing, resultRefreshing) => {
         if (!resultRefreshing) return res.sendStatus(403)
         res.json({
-          status: 'success',
-          message: 'loggedIn',
+          status: '200',
+          message: 'success',
           accessToken: accessToken,
           refreshToken: refreshToken,
         })
@@ -73,7 +73,7 @@ const signup = (req, res) => {
     if (result)
       return res.json({
         status: 403,
-        message: 'User already exist',
+        message: 'User exist',
       })
 
     if (
@@ -103,7 +103,7 @@ const signup = (req, res) => {
           username: username,
           email: email,
           password: hash,
-          rerefreshToken: refreshToken,
+          refreshToken: refreshToken,
         }
         const accessToken = jwt.sign(
           payloadToAccessToken,
@@ -117,14 +117,16 @@ const signup = (req, res) => {
           username: payloadToAccessToken.username,
           email: payloadToAccessToken.email,
           password: payloadToAccessToken.password,
-          rerefreshToken: refreshToken,
+          refreshToken: payloadToAccessToken.refreshToken,
         })
 
         saveAuthentication
           .save()
           .then((result) => {
+            console.log(result)
             return res.json({
               status: '200',
+              message: 'success',
               data: result,
               accessToken: accessToken,
               refreshToken: refreshToken,
@@ -133,6 +135,7 @@ const signup = (req, res) => {
           .catch((error) => {
             return res.json({
               status: '403',
+              message: 'An error has occured',
               error: 'An error  has occured ' + error,
             })
           })
