@@ -4,18 +4,20 @@ const fs = require('fs')
 
 const uploadController = (req, res) => {
   console.log(req.file)
-  //const data = JSON.parse(req.body.data)
+  const data = JSON.parse(req.body.data)
   // const data = req.body.data
-  const data = req.body
+  //const data = req.body
   if (!data)
     return res.json({
       status: 403,
       message: 'Unable to get user data',
     })
+  //console.log(data)
   const name = data.name
   const address = data.address
   const details = data.details
   // fetch the file extension
+  //console.log(details)
   const extensionName = path.extname(req.file.filename)
   const allowedExtension = ['.png', '.jpg', '.jpeg']
   if (!allowedExtension.includes(extensionName)) return res.sendStatus(4003)
@@ -30,16 +32,21 @@ const uploadController = (req, res) => {
     },
     email: req.user.email,
   })
+  //console.log(addingNewUploades.details)
   addingNewUploades
     .save()
     .then((result) => {
       return res.json({
-        status: 'success',
-        message: result,
+        status: 200,
+        message: 'success',
       })
     })
     .catch((error) => {
-      return res.sendStatus(501)
+      return res.json({
+        status: 501,
+        message: 'An error has occured',
+      })
+      console.log(error)
     })
 }
 

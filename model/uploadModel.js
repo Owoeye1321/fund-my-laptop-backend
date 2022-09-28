@@ -5,7 +5,7 @@ const mongoose = require('mongoose')
 const uploads = new mongoose.Schema({
   name: String,
   address: String,
-  detais: String,
+  details: String,
   image: {
     data: Buffer,
     contentType: String,

@@ -18,6 +18,8 @@ app.use('/api/auth', require('./routes/authentication'))
 app.use('/api/newUpload', require('./routes/uploadDetails'))
 app.use('/api/read', require('./routes/readDetails'))
 app.use('/api/token', require('./routes/refreshToken'))
+app.use('/api/', require('./routes/contact'))
+app.use('/api/logout/', require('./routes/logout'))
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, './public/', 'index.html'))

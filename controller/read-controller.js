@@ -1,10 +1,10 @@
 const uploadDetails = require('../model/uploadModel')
 
 const readMyController = (req, res) => {
-  console.log(req.user)
+  //console.log(req.user)
   const email = req.user.email
-  console.log(email)
-  uploadDetails.findOne({ email: email }, (error, result) => {
+  // console.log(email)
+  uploadDetails.find({ email: email }, (error, result) => {
     if (!result)
       return res.json({ status: 403, message: 'unable to fetch data' })
     return res.json(result)
@@ -19,7 +19,19 @@ const readAllController = async (req, res) => {
     message: allData,
   })
 }
+
+const readProfileDetailsController = async (req, res) => {
+  if (!req.user)
+    return res.json({
+      status: 401,
+      message: 'Invalid user or token',
+    })
+
+  res.send(req.user.email)
+}
+
 module.exports = {
   readMyController,
   readAllController,
+  readProfileDetailsController,
 }

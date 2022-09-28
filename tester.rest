@@ -45,8 +45,8 @@ Content-Type: application/json
  }
 
 ###
-GET http://localhost:6000/api/read/personal
-Content-Type: application/application/json
+GET http://localhost:6000/api/read/personal 
+Content-Type: application/json
 Authorization: Bearer 
 
 

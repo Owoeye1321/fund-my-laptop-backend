@@ -15,11 +15,11 @@ const refreshTokenController = (req, res) => {
       password: result.password,
     }
     const accessToken = jwt.sign(payload, ACCESS_TOKEN_SECRET_KEY, {
-      expiresIn: '30s',
+      expiresIn: '1d',
     })
     return res.json({
       status: 200,
-      accessToken: accessToken,
+      message: accessToken,
     })
   })
 }
