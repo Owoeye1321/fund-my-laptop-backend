@@ -14,13 +14,13 @@ const verifyJwt = async (req, res, next) => {
   if (!accessToken)
     return res.json({
       status: 401,
-      message: 'Unauthorized or empty token token',
+      message: 'unauthorized',
     })
   jwt.verify(accessToken, ACCESS_TOKEN_SECRET_KEY, (err, result) => {
     if (!result)
       return res.json({
         status: 403,
-        message: 'Unable to locate token details',
+        message: 'unauthorized',
       })
     //console.log(result)
     req.user = result

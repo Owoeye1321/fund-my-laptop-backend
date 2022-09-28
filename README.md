@@ -4,6 +4,7 @@ This is an endpoint for the fund raising web aplicaition
 
 ### Login Api
 
+```
 POST http://localhost:6000/api/auth/login<br>
 
 Content-Type: application/json<br>
@@ -20,6 +21,7 @@ return <br>
 status:"success"<br>
 state:"loggedIn"<br>
 }<br>
+```
 
 ### Sign up Api
 
