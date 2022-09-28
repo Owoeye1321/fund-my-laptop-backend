@@ -5,59 +5,77 @@ This is an endpoint for the fund raising web aplicaition
 ### Login Api
 
 ```
-POST http://localhost:6000/api/auth/login<br>
+    POST /api/auth/login
 
-Content-Type: application/json<br>
-Authorization: Bearer \${token} <br>
-{<br>
-"data": {<br>
-"username":"cyberxurde",<br>
-"password":"password"<br>
-}<br>
-}<br>
-<br>
-{<br>
-return <br>
-status:"success"<br>
-state:"loggedIn"<br>
-}<br>
+    Content-Type: application/json
+    Authorization: Bearer \${token}
+    {
+    "data": {
+    "username":"cyberxurde",
+    "password":"password"
+    }
+    }
+
+    {
+    return
+    status:"success"
+    state:"loggedIn"
+    }
 ```
 
 ### Sign up Api
 
-POST http://localhost:6000/api/auth/signup<br>
-Content-Type: application/json<br>
+```
+        POST /api/auth/signup
+        Content-Type: application/json
 
-{<br>
-"data": {<br>
-"username":"cyberxurde",<br>
-"email":"owoeye1321@gmail.com",<br>
-"password":"password"<br>
-}<br>
-}<br>
-return <br>
-{<br>
-status:"success"<br>
-}<br>
+        {
+        "data": {
+        "username":"cyberxurde",
+        "email":"owoeye1321@gmail.com",
+        "password":"password"
+        }
+        }
+        return
+        {
+        status:"success"
+        }
+```
 
 ### Uploading Gadgets details
 
-http://localhost:6000/api/newUpload/upload<br>
-Content-Type: application/json<br>
+```
+    POST /api/newUpload/upload
+    Content-Type: application/json
 
-{<br>
-"data":{<br>
-"name":"gadget name",<br>
-"address":"address",<br>
-"details":"details",<br>
-"image":{<br>
-"data": Buffer,<br>
-"contentType":"image/png"<br>
-},<br>
-"email":"email from req.user details stored from access token"<br>
-}<br>
-}<br>
+    {
+    "data":{
+    "name":"gadget name",
+    "address":"address",
+    "details":"details",
+    "image":{
+    "data": Buffer,
+    "contentType":"image/png"
+    },
+    "email":"email from req.user details stored from access token"
+    }
+    }
+```
 
 ### Getting a personal uploads
 
-GET http://localhost:6000/api/read/personal<br>
+```
+GET /api/read/personal
+```
+
+### Getting all Uploads
+
+```
+GET /api/read/all
+```
+
+### Refreshing tokens
+
+```
+GET /api/token/refresh
+```
