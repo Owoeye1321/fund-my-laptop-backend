@@ -21,43 +21,45 @@ const login = (req, res) => {
     console.log(result)
     const result_password = result.password
     const isMatch = await bycrypt.compare(password, result_password)
-    if (!isMatch)
+    if (!isMatch) {
       return res.json({
         status: 403,
         message: 'Invalid username or password',
       })
-    const payloadToRefresh = {
-      username: result.username,
-      email: result.email,
-      password: result_password,
+    } else {
+      const payloadToRefresh = {
+        username: result.username,
+        email: result.email,
+        password: result_password,
+      }
+      const refreshToken = jwt.sign(payloadToRefresh, REFRESH_TOKEN_SECRET_KEY)
+      const payloadToAccessToken = {
+        username: payloadToRefresh.username,
+        email: payloadToRefresh.email,
+        password: payloadToRefresh.password,
+        refreshToken: refreshToken,
+      }
+      const accessToken = jwt.sign(
+        payloadToAccessToken,
+        ACCESS_TOKEN_SECRET_KEY,
+        {
+          expiresIn: '1d',
+        },
+      )
+      authentication.updateOne(
+        { email: payloadToRefresh.email },
+        { $set: { refreshToken: refreshToken } },
+        (errorRefreshing, resultRefreshing) => {
+          if (!resultRefreshing) return res.sendStatus(403)
+          res.json({
+            status: '200',
+            message: 'success',
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+          })
+        },
+      )
     }
-    const refreshToken = jwt.sign(payloadToRefresh, REFRESH_TOKEN_SECRET_KEY)
-    const payloadToAccessToken = {
-      username: payloadToRefresh.username,
-      email: payloadToRefresh.email,
-      password: payloadToRefresh.password,
-      refreshToken: refreshToken,
-    }
-    const accessToken = jwt.sign(
-      payloadToAccessToken,
-      ACCESS_TOKEN_SECRET_KEY,
-      {
-        expiresIn: '1d',
-      },
-    )
-    authentication.updateOne(
-      { email: payloadToRefresh.email },
-      { $set: { refreshToken: refreshToken } },
-      (errorRefreshing, resultRefreshing) => {
-        if (!resultRefreshing) return res.sendStatus(403)
-        res.json({
-          status: '200',
-          message: 'success',
-          accessToken: accessToken,
-          refreshToken: refreshToken,
-        })
-      },
-    )
   })
 }
 
