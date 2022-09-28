@@ -1,5 +1,5 @@
 require('dotenv').config()
-const uri = process.env.ATLAS_URI_FOR_OWOEYE_LOCAL
+const uri = process.env.ATLAS_URI_FOR_OWOEYE
 const mongoose = require('mongoose')
 
 const { MongoClient, ServerApiVersion } = require('mongodb')
