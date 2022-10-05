@@ -20,6 +20,8 @@ This is an endpoint for the fund raising web aplicaition
     return
     status:"success"
     state:"loggedIn"
+    accessToken:''
+    refreshToken:''
     }
 ```
 
@@ -39,6 +41,8 @@ This is an endpoint for the fund raising web aplicaition
         return
         {
         status:"success"
+        accessToken:''
+        refreshToken:''
         }
 ```
 

@@ -13,7 +13,7 @@ const login = (req, res) => {
   const password = req.body.data.password
   //checking if a user exist
   authentication.findOne({ username: username }, async (error, result) => {
-    if (error) {
+    if (!result) {
       return res.json({
         status: 401,
         message: 'Invalid username or password ',
